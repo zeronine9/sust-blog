@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ post.title }} — DevBlog{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width:820px;">
+    <!-- Back link -->
+    <a href="{% url 'blog-home' %}" class="btn btn-sm btn-outline-secondary mb-4">
+        <i class="bi bi-arrow-left me-1"></i>All Posts
+    </a>
+
+    <!-- Post Header -->
+    <div class="post-detail-header">
+        <span class="tag-badge mb-3 d-inline-block">Article</span>
+        <h1 class="mb-3">{{ post.title }}</h1>
+        <div class="d-flex flex-wrap align-items-center gap-3">
+            <a href="{% url 'user-posts' post.author.username %}" class="author-badge">
+                <img src="{{ post.author.profile.profile_pic.url }}" alt="{{ post.author.username }}">
+                {{ post.author.username }}
+            </a>
+            <span class="text-muted small">
+                <i class="bi bi-calendar3 me-1"></i>{{ post.created_at|date:"F d, Y" }}
+            </span>
+            {% if post.updated_at != post.created_at %}
+            <span class="text-muted small">
+                <i class="bi bi-pencil me-1"></i>Updated {{ post.updated_at|date:"M d, Y" }}
+            </span>
+            {% endif %}
+
+            <!-- Edit/Delete (author only) -->
+            {% if user == post.author %}
+            <div class="ms-auto d-flex gap-2">
+                <a href="{% url 'post-update' post.pk %}" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-pencil me-1"></i>Edit
+                </a>
+                <a href="{% url 'post-delete' post.pk %}" class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-trash me-1"></i>Delete
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Featured Image -->
+    {% if post.image %}
+    <img src="{{ post.image.url }}" class="post-detail-img" alt="{{ post.title }}">
+    {% endif %}
+
+    <!-- Content -->
+    <div class="card p-4 p-md-5">
+        <div class="post-content">
+            {{ post.content|linebreaks }}
+        </div>
+    </div>
+
+    <!-- Bottom nav -->
+    <div class="d-flex justify-content-between mt-4 mb-5">
+        <a href="{% url 'blog-home' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Back to Home
+        </a>
+        {% if user.is_authenticated and user == post.author %}
+        <a href="{% url 'post-update' post.pk %}" class="btn btn-primary">
+            <i class="bi bi-pencil me-1"></i>Edit Post
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
